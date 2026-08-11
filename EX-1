@@ -1,0 +1,101 @@
+===============================================================
+476. Number Complement
+================================================================
+int findComplement(int num) {
+    if (num == 0) return 1; 
+    unsigned int bit = num;
+    bit |= bit >> 1;   
+    bit |= bit >> 2;   
+    bit |= bit >> 4;   
+    bit |= bit >> 8;   
+    bit|= bit >> 16;  
+    return num ^ bit;
+}
+=================================================================
+338. Counting Bits
+=================================================================
+int* countBits(int n, int* returnSize) {
+    int* ans = (int*)malloc((n + 1) * sizeof(int));
+    *returnSize = n + 1;
+
+    for (int i = 0; i <= n; i++) {
+        int count = 0;
+        int num = i;
+        while (num) {
+            count += (num & 1);
+            num >>= 1;
+        }
+        ans[i] = count;
+    }
+
+    return ans;
+}
+======================================================================
+421. Maximum XOR of Two Numbers in an Array
+======================================================================
+#include <stdlib.h>
+
+typedef struct TrieNode {
+    struct TrieNode *child[2];
+} TrieNode;
+
+TrieNode* createNode() {
+    TrieNode *node = (TrieNode *)malloc(sizeof(TrieNode));
+
+    node->child[0] = NULL;
+    node->child[1] = NULL;
+
+    return node;
+}
+
+void insert(TrieNode *root, int num) {
+    TrieNode *current = root;
+
+    for (int i = 30; i >= 0; i--) {
+        int bit = (num >> i) & 1;
+
+        if (current->child[bit] == NULL) {
+            current->child[bit] = createNode();
+        }
+
+        current = current->child[bit];
+    }
+}
+
+int getMaxXOR(TrieNode *root, int num) {
+    TrieNode *current = root;
+    int result = 0;
+
+    for (int i = 30; i >= 0; i--) {
+        int bit = (num >> i) & 1;
+        int opposite = 1 - bit;
+
+        if (current->child[opposite] != NULL) {
+            result |= (1 << i);
+            current = current->child[opposite];
+        }
+        else {
+            current = current->child[bit];
+        }
+    }
+
+    return result;
+}
+
+int findMaximumXOR(int* nums, int numsSize) {
+    TrieNode *root = createNode();
+    for (int i = 0; i < numsSize; i++) {
+        insert(root, nums[i]);
+    }
+
+    int maxXOR = 0;
+    for (int i = 0; i < numsSize; i++) {
+        int value = getMaxXOR(root, nums[i]);
+
+        if (value > maxXOR) {
+            maxXOR = value;
+        }
+    }
+
+    return maxXOR;
+}

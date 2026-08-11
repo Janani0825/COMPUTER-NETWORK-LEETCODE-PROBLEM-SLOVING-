@@ -1,0 +1,26 @@
+=============================================================
+461. Hamming Distance
+=============================================================
+int hammingDistance(int x, int y) {
+    int xorVal = x ^ y;
+    int count = 0;
+    while (xorVal) {
+        count += xorVal & 1;
+        xorVal >>= 1;
+    }
+    return count;
+}
+=============================================================
+477. Total Hamming Distance
+==============================================================
+int totalHammingDistance(int* nums, int numsSize) {
+    int total = 0;
+    for (int bit = 0; bit < 32; bit++) {
+        int ones = 0;
+        for (int i = 0; i < numsSize; i++) {
+            if ((nums[i] >> bit) & 1) ones++;
+        }
+        total += ones * (numsSize - ones);
+    }
+    return total;
+}

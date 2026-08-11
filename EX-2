@@ -1,0 +1,91 @@
+=========================================================
+67. Add Binary
+=========================================================
+char* addBinary(char* a, char* b) {
+    int i = strlen(a) - 1;
+    int j = strlen(b) - 1;
+    int carry = 0;
+    int max_len = (i > j ? i : j) + 3; 
+    char* res = (char*)malloc(max_len * sizeof(char));
+    int k = 0;
+
+    while (i >= 0 || j >= 0 || carry) {
+        if (i >= 0) {
+            carry += a[i] - '0';
+            i--;
+        }
+        if (j >= 0) {
+            carry += b[j] - '0';
+            j--;
+        }
+        res[k++] = (carry % 2) + '0';
+        carry /= 2;
+    }
+    res[k] = '\0';
+    for (int left = 0, right = k - 1; left < right; left++, right--) {
+        char temp = res[left];
+        res[left] = res[right];
+        res[right] = temp;
+    }
+
+    return res;
+}
+
+==============================================================
+693. Binary Number with Alternating Bits
+=============================================================
+
+bool hasAlternatingBits(int n) {
+    long long x = n ^ (n >> 1);
+    return (x & (x + 1)) == 0;
+}
+
+================================================================
+898. Bitwise ORs of Subarrays
+================================================================
+int compare(const void* a, const void* b) {
+    return (*(int*)a - *(int*)b);
+}
+
+int subarrayBitwiseORs(int* arr, int arrSize) {
+    int* globalUnique = (int*)malloc(32 * arrSize * sizeof(int));
+    int globalSize = 0;
+    int currentEnds[32]; 
+    int size = 0;
+
+    for (int i = 0; i < arrSize; i++) {
+        int num = arr[i];
+        int nextEnds[32];
+        int nextSize = 0;
+
+        nextEnds[nextSize++] = num;
+        globalUnique[globalSize++] = num;
+
+        for (int j = 0; j < size; j++) {
+            int nextOr = currentEnds[j] | num;
+            if (nextOr != nextEnds[nextSize - 1]) {
+                nextEnds[nextSize++] = nextOr;
+                globalUnique[globalSize++] = nextOr;
+            }
+        }
+        size = nextSize;
+        for (int j = 0; j < size; j++) {
+            currentEnds[j] = nextEnds[j];
+        }
+    }
+    qsort(globalUnique, globalSize, sizeof(int), compare);
+
+    if (globalSize == 0) {
+        free(globalUnique);
+        return 0;
+    }
+    int uniqueCount = 1;
+    for (int i = 1; i < globalSize; i++) {
+        if (globalUnique[i] != globalUnique[i - 1]) {
+            uniqueCount++;
+        }
+    }
+
+    free(globalUnique);
+    return uniqueCount;
+}
